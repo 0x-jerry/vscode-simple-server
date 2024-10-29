@@ -1,7 +1,3 @@
-# TS SDK Template
+# VSCode Simple Server
 
-## TODO
-
-- [ ] run `npm init --yes`
-- [ ] change package metadata
-- [ ] rewrite this docs.
+A utils for start a simple server in VSCode.

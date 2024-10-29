@@ -1,7 +1,7 @@
 {
   "name": "@0x-jerry/vscode-simple-server",
   "version": "0.0.0",
-  "description": "Utils to start a preview server",
+  "description": "A utils for start a simple server in VSCode.",
   "type": "module",
   "engines": {
     "node": ">= 18"
