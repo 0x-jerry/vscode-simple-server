@@ -31,14 +31,17 @@ export class StatusBar implements Disposable {
   }
 
   started() {
+    this.state = StatusBarState.Started
     this._updateInfo()
   }
 
   spinning() {
+    this.state = StatusBarState.Spinning
     this._updateInfo()
   }
 
   stopped() {
+    this.state = StatusBarState.Stopped
     this._updateInfo()
   }
 
