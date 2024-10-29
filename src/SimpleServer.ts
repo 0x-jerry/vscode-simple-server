@@ -13,20 +13,20 @@ import {
   Uri,
 } from 'vscode'
 import { StatusBar, type StatusBarConfig } from './StatusBar'
-import { sleep } from '@0x-jerry/utils'
+import { sleep, type Awaitable } from '@0x-jerry/utils'
 
 export interface SimpleServerOptions {
   taskName: string
   env: ExtensionContext
   autoStart?: boolean
 
-  getStartCommand(): Thenable<string>
+  getStartCommand(): Awaitable<string>
 
   /**
    * Return url by opened file uri, or return url root when uri is not available
-   * @param uri
+   * @param activeTextUri
    */
-  resolveUrl(uri?: Uri): Thenable<string>
+  resolveUrl(activeTextUri?: Uri): Awaitable<string | undefined>
 
   statusBar?: StatusBarConfig
 }
@@ -136,13 +136,12 @@ export class SimpleServer implements Disposable {
     if (!window.activeTextEditor) return
 
     const uri = window.activeTextEditor.document.uri
-    const workspaceFolder = workspace.getWorkspaceFolder(uri)
-
-    if (!workspaceFolder) return
 
     const url = await this.opt.resolveUrl(uri)
 
-    await this._openUrl(url)
+    if (url) {
+      await this._openUrl(url)
+    }
   }
 
   async _detectServer(url: string) {
@@ -180,7 +179,7 @@ export class SimpleServer implements Disposable {
     await this._startTask()
 
     const rootUrl = await this.opt.resolveUrl()
-    this.serverStarted = await this._detectServer(rootUrl)
+    this.serverStarted = rootUrl ? await this._detectServer(rootUrl) : true
 
     this._navigateCurrentPage()
     this.statusBar?.started()
