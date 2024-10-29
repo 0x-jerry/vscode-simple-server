@@ -1,9 +1,9 @@
 import { Disposable, StatusBarAlignment, window, type StatusBarItem } from 'vscode'
 
-type StatusBarInfo = Pick<
-  StatusBarItem,
-  'text' | 'tooltip' | 'command' | 'color' | 'backgroundColor'
->
+type StatusBarInfo = Partial<
+  Pick<StatusBarItem, 'tooltip' | 'command' | 'color' | 'backgroundColor'>
+> &
+  Pick<StatusBarItem, 'text'>
 
 export interface StatusBarConfig {
   priority?: number
