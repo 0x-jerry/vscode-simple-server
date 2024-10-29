@@ -1,6 +1,9 @@
 import { Disposable, StatusBarAlignment, window, type StatusBarItem } from 'vscode'
 
-type StatusBarInfo = Pick<StatusBarItem, 'text' | 'tooltip' | 'command'>
+type StatusBarInfo = Pick<
+  StatusBarItem,
+  'text' | 'tooltip' | 'command' | 'color' | 'backgroundColor'
+>
 
 export interface StatusBarConfig {
   priority?: number
@@ -45,6 +48,8 @@ export class StatusBar implements Disposable {
     this._statusBar.text = config.text
     this._statusBar.tooltip = config.tooltip
     this._statusBar.command = config.command
+    this._statusBar.color = config.color
+    this._statusBar.backgroundColor = config.backgroundColor
   }
 
   dispose() {
