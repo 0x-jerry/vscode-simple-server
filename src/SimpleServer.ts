@@ -49,6 +49,10 @@ export class SimpleServer implements Disposable {
   }
 
   constructor(readonly opt: SimpleServerOptions) {
+    if (opt.statusBar) {
+      this.statusBar = new StatusBar(opt.statusBar)
+    }
+
     this._addDisposable(
       tasks.onDidEndTask((e) => {
         if (e.execution.task.name === this.opt.taskName) {
@@ -67,10 +71,6 @@ export class SimpleServer implements Disposable {
 
     if (opt.autoStart) {
       this.start()
-    }
-
-    if (opt.statusBar) {
-      this.statusBar = new StatusBar(opt.statusBar)
     }
   }
 
