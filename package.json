@@ -1,6 +1,6 @@
 {
   "name": "@0x-jerry/vscode-simple-server",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "A utils for start a simple server in VSCode.",
   "type": "module",
   "engines": {
