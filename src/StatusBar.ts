@@ -1,0 +1,53 @@
+import { Disposable, StatusBarAlignment, window, type StatusBarItem } from 'vscode'
+
+type StatusBarInfo = Pick<StatusBarItem, 'text' | 'tooltip' | 'command'>
+
+export interface StatusBarConfig {
+  priority?: number
+
+  started: StatusBarInfo
+  spinning: StatusBarInfo
+  stopped: StatusBarInfo
+}
+
+enum StatusBarState {
+  Started = 'started',
+  Spinning = 'spinning',
+  Stopped = 'stopped',
+}
+
+export class StatusBar implements Disposable {
+  _statusBar: StatusBarItem
+
+  state = StatusBarState.Stopped
+
+  constructor(readonly opt: StatusBarConfig) {
+    this._statusBar = window.createStatusBarItem(StatusBarAlignment.Right, opt.priority)
+    this._updateInfo()
+    this._statusBar.show()
+  }
+
+  started() {
+    this._updateInfo()
+  }
+
+  spinning() {
+    this._updateInfo()
+  }
+
+  stopped() {
+    this._updateInfo()
+  }
+
+  _updateInfo() {
+    const config = this.opt[this.state]
+
+    this._statusBar.text = config.text
+    this._statusBar.tooltip = config.tooltip
+    this._statusBar.command = config.command
+  }
+
+  dispose() {
+    this._statusBar.dispose()
+  }
+}
