@@ -161,6 +161,7 @@ export class SimpleServer implements Disposable {
         // VitePress start success
         return true
       } catch (error) {
+        console.warn('fetch url failed', error)
         // failed
         // ignore
       }
