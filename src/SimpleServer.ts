@@ -8,19 +8,23 @@ import {
   commands,
   tasks,
   window,
-  workspace,
   type ExtensionContext,
   Uri,
+  type ShellExecutionOptions,
 } from 'vscode'
 import { StatusBar, type StatusBarConfig } from './StatusBar'
 import { sleep, type Awaitable } from '@0x-jerry/utils'
+
+interface ServerCommandOptions extends ShellExecutionOptions {
+  commandLine: string
+}
 
 export interface SimpleServerOptions {
   taskName: string
   env: ExtensionContext
   autoStart?: boolean
 
-  getStartCommand(): Awaitable<string>
+  getStartServerCommand(): Awaitable<ServerCommandOptions>
 
   /**
    * Return url by opened file uri, or return url root when uri is not available
@@ -104,12 +108,14 @@ export class SimpleServer implements Disposable {
       return
     }
 
+    const { commandLine, ...shellOptions } = await this.opt.getStartServerCommand()
+
     const task = new Task(
       { type: 'SimpleServer' },
       TaskScope.Workspace,
       this.opt.taskName,
       'Provider by extension',
-      new ShellExecution(await this.opt.getStartCommand())
+      new ShellExecution(commandLine, shellOptions)
     )
 
     task.isBackground = true
