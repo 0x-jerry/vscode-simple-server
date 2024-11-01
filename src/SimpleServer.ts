@@ -34,6 +34,13 @@ export interface SimpleServerOptions {
   resolveUrl(activeTextUri?: Uri): Awaitable<string | undefined>
 
   statusBar?: StatusBarConfig
+
+  /**
+   * Detect server start timeout
+   *
+   * @default 10_000 10s
+   */
+  checkTimeout?: number
 }
 
 export class SimpleServer implements Disposable {
@@ -154,7 +161,8 @@ export class SimpleServer implements Disposable {
   async _detectServer(url: string) {
     let now = Date.now()
 
-    const maxTime = now + 15 * 1000
+    const maxTime = now + (this.opt.checkTimeout || 10_000)
+
     while (now < maxTime) {
       try {
         await fetch(url)
