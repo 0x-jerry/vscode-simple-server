@@ -27,7 +27,8 @@ export interface SimpleServerOptions {
   getStartServerCommand(): Awaitable<ServerCommandOptions>
 
   /**
-   * Return url by opened file uri, or return url root when uri is not available
+   * Return url by {@link activeTextUri}, should return url root when {@link activeTextUri} is unavailable
+   *
    * @param activeTextUri
    */
   resolveUrl(activeTextUri?: Uri): Awaitable<string | undefined>
