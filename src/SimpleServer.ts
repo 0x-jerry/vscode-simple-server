@@ -19,6 +19,10 @@ interface ServerCommandOptions extends ShellExecutionOptions {
   commandLine: string
 }
 
+interface Logger {
+  info(msg: string, ...items: unknown[]): void
+}
+
 export interface SimpleServerOptions {
   taskName: string
   env: ExtensionContext
@@ -41,6 +45,8 @@ export interface SimpleServerOptions {
    * @default 10_000 10s
    */
   checkTimeout?: number
+
+  logger: Logger
 }
 
 export class SimpleServer implements Disposable {
@@ -58,6 +64,10 @@ export class SimpleServer implements Disposable {
 
   get isStarted() {
     return !!this.editorChangeListener
+  }
+
+  get logger() {
+    return this.opt.logger
   }
 
   constructor(readonly opt: SimpleServerOptions) {
@@ -95,6 +105,8 @@ export class SimpleServer implements Disposable {
       return group.tabs.find((t) => t.label === 'Simple Browser')
     })
 
+    this.logger.info('Simple Browser opened status:', hasSimpleBrowserOpened)
+
     if (this.currentUrl === url && hasSimpleBrowserOpened) return
 
     if (this.serverStarted) {
@@ -102,21 +114,34 @@ export class SimpleServer implements Disposable {
     }
 
     // https://github.com/microsoft/vscode/blob/403294d92b4fbcdad61bb74635a8e5e145151aaa/extensions/simple-browser/src/extension.ts#L58
-    await commands.executeCommand('simpleBrowser.api.open', url, {
-      viewColumn: ViewColumn.Beside,
-      preserveFocus: true,
-    })
+    try {
+      await commands.executeCommand('simpleBrowser.api.open', url, {
+        viewColumn: ViewColumn.Beside,
+        preserveFocus: true,
+      })
+
+      this.logger.info('Simple Browser opened with url:', url)
+    } catch (error) {
+      this.logger.info('Simple Browser open url failed', error)
+    }
   }
 
   async _startTask() {
+    // Reset simple browser url
+    this.currentUrl = undefined
+
     const existsTask = window.terminals.find((t) => t.name === this.opt.taskName)
 
     if (existsTask && existsTask.exitStatus == null) {
       this.taskHandler = existsTask
+
+      this.logger.info('Reusing exits task.')
       return
     }
 
     const { commandLine, ...shellOptions } = await this.opt.getStartServerCommand()
+
+    this.logger.info('Starting server with command:', commandLine)
 
     const task = new Task(
       { type: 'SimpleServer' },
@@ -153,6 +178,8 @@ export class SimpleServer implements Disposable {
 
     const url = await this.opt.resolveUrl(uri)
 
+    this.logger.info(`Resolved url: ${uri.fsPath} -> ${url}`)
+
     if (url) {
       await this._openUrl(url)
     }
@@ -170,8 +197,7 @@ export class SimpleServer implements Disposable {
         // VitePress start success
         return true
       } catch (error) {
-        console.warn('fetch url failed', error)
-        // failed
+        this.logger.info('VitePress server is not ready yet...', error)
         // ignore
       }
 
@@ -191,6 +217,8 @@ export class SimpleServer implements Disposable {
     this.editorChangeListener = window.onDidChangeActiveTextEditor((e) => {
       this._navigateCurrentPage()
     })
+
+    this.logger.info('Starting server...')
 
     await this._startTask()
     this.serverStarted = true
