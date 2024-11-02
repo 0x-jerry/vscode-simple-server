@@ -43,7 +43,7 @@ export interface SimpleServerOptions {
    */
   checkTimeout?: number
 
-  logger: Logger
+  logger?: Logger
 }
 
 export class SimpleServer implements Disposable {
