@@ -1,6 +1,6 @@
 import { Disposable, StatusBarAlignment, window, type StatusBarItem } from 'vscode'
 
-type StatusBarInfo = Partial<
+export type StatusBarInfo = Partial<
   Pick<StatusBarItem, 'tooltip' | 'command' | 'color' | 'backgroundColor'>
 > &
   Pick<StatusBarItem, 'text'>

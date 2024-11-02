@@ -14,13 +14,10 @@ import {
 } from 'vscode'
 import { StatusBar, type StatusBarConfig } from './StatusBar'
 import { sleep, type Awaitable } from '@0x-jerry/utils'
+import { emptyLogger, type Logger } from './Logger'
 
 interface ServerCommandOptions extends ShellExecutionOptions {
   commandLine: string
-}
-
-interface Logger {
-  info(msg: string, ...items: unknown[]): void
 }
 
 export interface SimpleServerOptions {
@@ -67,7 +64,7 @@ export class SimpleServer implements Disposable {
   }
 
   get logger() {
-    return this.opt.logger
+    return this.opt.logger || emptyLogger
   }
 
   constructor(readonly opt: SimpleServerOptions) {
