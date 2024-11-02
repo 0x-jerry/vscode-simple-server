@@ -161,7 +161,7 @@ export class SimpleServer implements Disposable {
   async _detectServer(url: string) {
     let now = Date.now()
 
-    const maxTime = now + (this.opt.checkTimeout || 10_000)
+    const maxTime = now + (this.opt.checkTimeout ?? 10_000)
 
     while (now < maxTime) {
       try {
@@ -179,7 +179,7 @@ export class SimpleServer implements Disposable {
       now = Date.now()
     }
 
-    return false
+    return true
   }
 
   async start() {
@@ -193,9 +193,12 @@ export class SimpleServer implements Disposable {
     })
 
     await this._startTask()
+    this.serverStarted = true
 
     const rootUrl = await this.opt.resolveUrl()
-    this.serverStarted = rootUrl ? await this._detectServer(rootUrl) : true
+    if (rootUrl) {
+      await this._detectServer(rootUrl)
+    }
 
     this._navigateCurrentPage()
     this.statusBar?.started()
