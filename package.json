@@ -54,6 +54,6 @@
     "vitest": "^2.1.4"
   },
   "dependencies": {
-    "@0x-jerry/utils": "^3.0.2"
+    "@0x-jerry/utils": "^4.0.0"
   }
 }
